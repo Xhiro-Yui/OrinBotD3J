@@ -1,0 +1,74 @@
+package com.github.xhiroyui.orinbot.modules;
+
+import discord4j.core.DiscordClient;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
+import reactor.util.function.Tuples;
+
+import java.util.*;
+
+public class CommandHandler {
+    private final DiscordClient client;
+    private Map<Long, String> guildPrefixes;
+    private Map<String, Command> commandCallers = new HashMap<>();
+
+    public CommandHandler(DiscordClient client, Set<Command> commands) {
+        this.client = client;
+        initializeGuildPrefixes();
+
+        for (Command cmd : commands) {
+            for (String callers : cmd.getCommandCallers()) {
+                commandCallers.put(callers, cmd);
+            }
+        }
+    }
+
+    private void initializeGuildPrefixes() {
+        // TODO Read data from somewhere to initialize, currently just creating dummy version
+        guildPrefixes = new HashMap<>();
+        guildPrefixes.put(1234567890L, "Dummy values");
+    }
+
+    public Flux<Void> handleMCEvent() {
+        return client.getEventDispatcher()
+                .on(MessageCreateEvent.class)
+                .filter(mce -> mce.getMessage().getContent().isPresent())
+                .filterWhen(mce -> mce.getMessage().getAuthor().map(author -> !author.isBot()))
+                .map(this::checkPrefixAndTrim)
+                .filter(Tuple3::getT1)
+                .flatMap(tup3 -> processCommand(tup3.getT2(), tup3.getT3()))
+                .share();
+    }
+
+    private Tuple3<Boolean, String, MessageCreateEvent> checkPrefixAndTrim(MessageCreateEvent mce) {
+        return Tuples.of(
+                mce.getMessage().getContent().get().startsWith(getPrefix(mce.getGuildId().get().asLong())),
+                mce.getMessage().getContent().get().substring(getPrefix(mce.getGuildId().get().asLong()).length()),
+                mce);
+    }
+
+    private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {
+        final String[] splittedCommand = trimmedCommand.split(" ");
+        return Flux.just(splittedCommand[0])
+                .flatMap(this::commandLookup)
+                .flatMap(command -> command.executeCommand(mce, Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length))).then();
+    }
+
+    private Mono<? extends Command> commandLookup(String commandCaller) {
+        return Mono.justOrEmpty(commandCaller)
+                .flatMap(commandsName -> {
+                    return Mono.justOrEmpty(commandCallers.get(commandCaller));
+                });
+    }
+
+    private String getPrefix(long guildID) {
+        for (Map.Entry<Long, String> entry : guildPrefixes.entrySet()) {
+            if (entry.getKey() == guildID) {
+                return entry.getValue();
+            }
+        }
+        return "~";
+    }
+}

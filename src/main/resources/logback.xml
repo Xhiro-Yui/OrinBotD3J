@@ -1,0 +1,19 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>
+            <!--Swap between the below and above pattern to see the full logger name-->
+            <!--<pattern>%-75logger - %msg%n</pattern>-->
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <logger name="reactor" level="ERROR" />
+    <logger name="io.netty" level="ERROR" />
+    <!--<logger name="sx.blah.discord.Discord4J" level="DEBUG" />-->
+
+</configuration>
