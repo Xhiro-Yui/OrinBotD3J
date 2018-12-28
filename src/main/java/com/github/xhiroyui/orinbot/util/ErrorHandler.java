@@ -5,5 +5,5 @@ import reactor.core.publisher.Mono;
 
 @FunctionalInterface
 public interface ErrorHandler {
-    Mono<Void> handle(Object object, Throwable error);
+    public Mono<String> handle(Object object, Throwable error);
 }

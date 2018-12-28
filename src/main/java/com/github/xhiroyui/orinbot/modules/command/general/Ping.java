@@ -13,14 +13,11 @@ public class Ping extends GeneralCommands implements Command{
     @Override
     public Mono<Void> executeCommand(MessageCreateEvent event, String[] args) {
         return Mono.justOrEmpty(event)
-//                .map(mce -> mce.getMessage().getAuthorAsMember().filterWhen(this::validatePermissions)) // Line is not necessary for General Module
-                .flatMap(mce -> processParameters(args, requiredParameters))
+                .flatMap(ignored -> processParameters(args, requiredParameters))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
-                        .then(Mono.just(event)
-                                .map(MessageCreateEvent::getMessage)
-                                .flatMap(Message::getChannel)
-                                .flatMap(channel -> channel.createMessage(spec -> spec.setContent(error.getMessage())))
-                                .then(Mono.empty())))
+                        .flatMap(errorMessage -> event.getMessage().getChannel()
+                                .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
+                        .then(Mono.empty()))
                 .flatMap(processedArgs -> runCommand(event, processedArgs))
                 .then();
     }
