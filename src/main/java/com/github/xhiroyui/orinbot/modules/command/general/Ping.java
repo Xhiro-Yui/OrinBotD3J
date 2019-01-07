@@ -4,10 +4,12 @@ import com.github.xhiroyui.orinbot.modules.Command;
 import com.github.xhiroyui.orinbot.util.BotUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
 public class Ping extends GeneralCommands implements Command{
     private final int requiredParameters = 0;
+    private final String description = "Pongs you.";
     private String[] commandCallers = {"ping"};
 
     @Override
@@ -32,8 +34,10 @@ public class Ping extends GeneralCommands implements Command{
     }
 
     @Override
-    public Mono<Void> getCommandInfo(MessageCreateEvent event, String[] args) {
-        return Mono.empty();
+    public EmbedCreateSpec getCommandInfo(EmbedCreateSpec spec) {
+        spec.setTitle(this.getClass().getSimpleName());
+        spec.setDescription(description);
+        return spec;
     }
 
     @Override

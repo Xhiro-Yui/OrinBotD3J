@@ -1,5 +1,6 @@
 package com.github.xhiroyui.orinbot.modules;
 
+import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import reactor.core.publisher.Flux;
@@ -12,17 +13,10 @@ import java.util.*;
 public class CommandHandler {
     private final DiscordClient client;
     private Map<Long, String> guildPrefixes;
-    private Map<String, Command> commandCallers = new HashMap<>();
 
-    public CommandHandler(DiscordClient client, Set<Command> commands) {
+    public CommandHandler(DiscordClient client) {
         this.client = client;
         initializeGuildPrefixes();
-
-        for (Command cmd : commands) {
-            for (String callers : cmd.getCommandCallers()) {
-                commandCallers.put(callers, cmd);
-            }
-        }
     }
 
     private void initializeGuildPrefixes() {
@@ -52,15 +46,8 @@ public class CommandHandler {
     private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {
         final String[] splittedCommand = trimmedCommand.split(" ");
         return Flux.just(splittedCommand[0])
-                .flatMap(this::commandLookup)
+                .flatMap(CommandUtil::commandLookup)
                 .flatMap(command -> command.executeCommand(mce, Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length))).then();
-    }
-
-    private Mono<? extends Command> commandLookup(String commandCaller) {
-        return Mono.justOrEmpty(commandCaller)
-                .flatMap(commandsName -> {
-                    return Mono.justOrEmpty(commandCallers.get(commandCaller));
-                });
     }
 
     private String getPrefix(long guildID) {

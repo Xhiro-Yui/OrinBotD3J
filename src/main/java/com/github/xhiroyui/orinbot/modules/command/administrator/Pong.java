@@ -7,10 +7,12 @@ import com.github.xhiroyui.orinbot.modules.MissingPermissionsException;
 import com.github.xhiroyui.orinbot.util.BotUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
+import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
 public class Pong extends AdministratorCommands implements Command {
     final int requiredParameters = 1;
+    private final String description = "Pings you back";
     private String[] commandCallers = {"pong"};
 
     @Override
@@ -31,13 +33,15 @@ public class Pong extends AdministratorCommands implements Command {
         return Mono.just(event)
                 .map(MessageCreateEvent::getMessage)
                 .flatMap(Message::getChannel)
-                .flatMap(channel -> channel.createMessage(spec -> spec.setContent("Ping")))
+                .flatMap(channel -> channel.createMessage(spec -> spec.setContent("Ping " + args[0])))
                 .then();
     }
 
     @Override
-    public Mono<Void> getCommandInfo(MessageCreateEvent event, String[] args) {
-        return Mono.empty();
+    public EmbedCreateSpec getCommandInfo(EmbedCreateSpec spec) {
+        spec.setTitle(this.getClass().getSimpleName());
+        spec.setDescription(description);
+        return spec;
     }
 
     @Override
