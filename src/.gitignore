@@ -1,0 +1,32 @@
+*.log
+*.jar
+hs_err_pid*
+*.bat
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Eclipse project files
+.classpath
+.project
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+#Gradle
+.gradletasknamecache
+.gradle/
+build/
+bin/
+/.settings/
+!gradle-wrapper.jar
+
+# Program files
+src/main/resources/logback-test.xml
+whitelist.json
