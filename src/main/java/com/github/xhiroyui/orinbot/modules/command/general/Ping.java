@@ -13,7 +13,7 @@ public class Ping extends GeneralCommands implements Command{
     private String[] commandCallers = {"ping"};
 
     @Override
-    public Mono<Void> executeCommand(MessageCreateEvent event, String[] args) {
+    public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
                 .flatMap(ignored -> processParameters(args, requiredParameters))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)

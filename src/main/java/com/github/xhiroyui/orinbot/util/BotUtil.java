@@ -33,6 +33,8 @@ public class BotUtil {
             return Mono.just(errorMessage);
         }
 
-        return Mono.just(errorMessage = "Default error message");
+        return Mono.just("Default error message");
     };
+
+    public static final String[] EMPTY_ARRAY = new String[0];
 }

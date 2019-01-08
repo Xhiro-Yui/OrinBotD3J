@@ -16,7 +16,7 @@ public class Pong extends AdministratorCommands implements Command {
     private String[] commandCallers = {"pong"};
 
     @Override
-    public Mono<Void> executeCommand(MessageCreateEvent event, String[] args) {
+    public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
                 .flatMap(mce -> mce.getMessage().getAuthorAsMember().flatMap(this::validatePermissions))
                 .flatMap(ignored -> processParameters(args, requiredParameters))

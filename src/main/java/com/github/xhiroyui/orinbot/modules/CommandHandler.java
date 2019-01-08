@@ -44,10 +44,10 @@ public class CommandHandler {
     }
 
     private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {
-        final String[] splittedCommand = trimmedCommand.split(" ");
+        final String[] splittedCommand = trimmedCommand.split(" ", 2);
         return Flux.just(splittedCommand[0])
                 .flatMap(CommandUtil::commandLookup)
-                .flatMap(command -> command.executeCommand(mce, Arrays.copyOfRange(splittedCommand, 1, splittedCommand.length))).then();
+                .flatMap(command -> command.executeCommand(mce, splittedCommand.length == 1 ? "":splittedCommand[1])).then();
     }
 
     private String getPrefix(long guildID) {

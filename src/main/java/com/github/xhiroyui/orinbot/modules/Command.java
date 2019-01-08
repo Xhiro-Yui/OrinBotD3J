@@ -5,7 +5,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
 public interface Command {
-    Mono<Void> executeCommand(MessageCreateEvent event, String[] args);
+    Mono<Void> executeCommand(MessageCreateEvent event, String args);
 
     Mono<Void> runCommand(MessageCreateEvent event, String[] args);
 
