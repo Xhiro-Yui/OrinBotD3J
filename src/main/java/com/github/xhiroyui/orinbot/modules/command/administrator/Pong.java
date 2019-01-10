@@ -10,16 +10,21 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
-public class Pong extends AdministratorCommands implements Command {
-    final int requiredParameters = 1;
-    private final String description = "Pings you back";
-    private String[] commandCallers = {"pong"};
+import java.util.List;
+
+public class Pong extends AdministratorCommands {
+    public Pong() {
+        super("Pings you back",
+                1,
+                List.of(),
+                List.of("pong"));
+    }
 
     @Override
     public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
                 .flatMap(mce -> mce.getMessage().getAuthorAsMember().flatMap(this::validatePermissions))
-                .flatMap(ignored -> processParameters(args, requiredParameters))
+                .flatMap(ignored -> processParameters(args))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
                         .flatMap(errorMessage -> event.getMessage().getChannel()
                                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
@@ -35,17 +40,5 @@ public class Pong extends AdministratorCommands implements Command {
                 .flatMap(Message::getChannel)
                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent("Ping " + args[0])))
                 .then();
-    }
-
-    @Override
-    public EmbedCreateSpec getCommandInfo(EmbedCreateSpec spec) {
-        spec.setTitle(this.getClass().getSimpleName());
-        spec.setDescription(description);
-        return spec;
-    }
-
-    @Override
-    public String[] getCommandCallers() {
-        return this.commandCallers;
     }
 }

@@ -8,17 +8,22 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
-import java.util.Set;
+import java.util.Arrays;
+import java.util.List;
 
-public class Help extends GeneralCommands implements Command {
-    private final int requiredParameters = 1;
-    private final String description = "Provides information for commands (including this one)";
-    private String[] commandCallers = {"help"};
+public class Help extends GeneralCommands {
+    public Help() {
+        super("Provides information for commands (including this one). ",
+                1,
+                List.of("Command caller"),
+                List.of("help")
+        );
+    }
 
     @Override
     public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
-                .flatMap(ignored -> processParameters(args, requiredParameters))
+                .flatMap(ignored -> processParameters(args))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
                         .flatMap(errorMessage -> event.getMessage().getChannel()
                                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
@@ -35,17 +40,5 @@ public class Help extends GeneralCommands implements Command {
                 .zipWith(CommandUtil.commandLookup(args[0]))
                 .flatMap(tuple -> tuple.getT1().createMessage(spec -> spec.setEmbed(embedSpec -> tuple.getT2().getCommandInfo(embedSpec))))
                 .then();
-    }
-
-    @Override
-    public EmbedCreateSpec getCommandInfo(EmbedCreateSpec spec) {
-        spec.setTitle(this.getClass().getSimpleName());
-        spec.setDescription(description);
-        return spec;
-    }
-
-    @Override
-    public String[] getCommandCallers() {
-        return this.commandCallers;
     }
 }

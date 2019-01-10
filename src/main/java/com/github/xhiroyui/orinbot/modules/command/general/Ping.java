@@ -7,15 +7,20 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
 import reactor.core.publisher.Mono;
 
-public class Ping extends GeneralCommands implements Command{
-    private final int requiredParameters = 0;
-    private final String description = "Pongs you.";
-    private String[] commandCallers = {"ping"};
+import java.util.List;
+
+public class Ping extends GeneralCommands {
+    public Ping() {
+        super("Pongs you.",
+                0,
+                List.of(),
+                List.of("ping"));
+    }
 
     @Override
     public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
-                .flatMap(ignored -> processParameters(args, requiredParameters))
+                .flatMap(ignored -> processParameters(args))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
                         .flatMap(errorMessage -> event.getMessage().getChannel()
                                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
@@ -31,17 +36,5 @@ public class Ping extends GeneralCommands implements Command{
                 .flatMap(Message::getChannel)
                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent("Pong")))
                 .then();
-    }
-
-    @Override
-    public EmbedCreateSpec getCommandInfo(EmbedCreateSpec spec) {
-        spec.setTitle(this.getClass().getSimpleName());
-        spec.setDescription(description);
-        return spec;
-    }
-
-    @Override
-    public String[] getCommandCallers() {
-        return this.commandCallers;
     }
 }
