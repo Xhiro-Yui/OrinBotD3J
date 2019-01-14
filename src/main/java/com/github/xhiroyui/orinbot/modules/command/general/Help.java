@@ -16,7 +16,7 @@ public class Help extends GeneralCommands {
         super("Provides information for commands (including this one). ",
                 1,
                 List.of("Command caller"),
-                List.of("help")
+                List.of("help", "h")
         );
     }
 
