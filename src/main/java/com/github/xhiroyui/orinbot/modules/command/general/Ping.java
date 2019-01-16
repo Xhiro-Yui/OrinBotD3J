@@ -21,11 +21,11 @@ public class Ping extends GeneralCommands {
     public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
                 .flatMap(ignored -> processParameters(args))
-                .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
+                .flatMap(processedArgs -> runCommand(event, processedArgs))
+                .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
                         .flatMap(errorMessage -> event.getMessage().getChannel()
                                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
                         .then(Mono.empty()))
-                .flatMap(processedArgs -> runCommand(event, processedArgs))
                 .then();
     }
 

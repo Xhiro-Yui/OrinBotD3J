@@ -5,6 +5,7 @@ import com.github.xhiroyui.orinbot.modules.Command;
 import com.github.xhiroyui.orinbot.modules.command.administrator.Pong;
 import com.github.xhiroyui.orinbot.modules.command.general.Help;
 import com.github.xhiroyui.orinbot.modules.command.general.Ping;
+import com.github.xhiroyui.orinbot.util.BotUtil;
 import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.DiscordClient;
 

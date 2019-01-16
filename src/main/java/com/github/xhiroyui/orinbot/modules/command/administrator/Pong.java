@@ -25,7 +25,7 @@ public class Pong extends AdministratorCommands {
         return Mono.justOrEmpty(event)
                 .flatMap(mce -> mce.getMessage().getAuthorAsMember().flatMap(this::validatePermissions))
                 .flatMap(ignored -> processParameters(args))
-                .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error)
+                .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
                         .flatMap(errorMessage -> event.getMessage().getChannel()
                                 .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
                         .then(Mono.empty()))
