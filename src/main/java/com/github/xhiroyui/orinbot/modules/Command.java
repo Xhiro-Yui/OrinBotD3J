@@ -2,12 +2,16 @@ package com.github.xhiroyui.orinbot.modules;
 
 import com.github.xhiroyui.orinbot.util.BotUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Command {
@@ -25,7 +29,26 @@ public abstract class Command {
         this.commandAlias = commandAlias;
     }
 
-    protected abstract Mono<Void> executeCommand(MessageCreateEvent event, String args);
+    public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
+        return Mono.justOrEmpty(event)
+                .flatMap(mce -> mce.getMessage().getChannel().zipWith(event.getMessage().getAuthorAsMember()).flatMap(this::validatePermissions))
+                .flatMap(ignored -> processParameters(args))
+                .flatMap(processedArgs -> runCommand(event, processedArgs))
+                .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
+                        .flatMap(errorMessage -> event.getMessage().getChannel()
+                                .flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
+                        .then(Mono.empty()))
+                .then();
+    }
+
+    public Mono<PermissionSet> validatePermissions(Tuple2<MessageChannel, Member> permCheck) {
+        return Mono.just(permCheck.getT2())
+                .flatMap(Member::getBasePermissions)
+                .filterWhen(this::checkRequiredPermissions)
+                .switchIfEmpty(Mono.error(new MissingPermissionsException(permCheck.getT2())));
+    }
+
+    protected abstract Publisher<Boolean> checkRequiredPermissions(PermissionSet permissions);
 
     protected abstract Mono<Void> runCommand(MessageCreateEvent event, String[] args);
 

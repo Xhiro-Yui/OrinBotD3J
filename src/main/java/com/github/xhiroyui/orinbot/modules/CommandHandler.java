@@ -8,7 +8,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandHandler {
     private final DiscordClient client;

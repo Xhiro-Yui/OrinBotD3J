@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // Discord Library
-    implementation "com.discord4j.discord4j:discord4j-core:c728cb4"
+    implementation "com.discord4j.discord4j:discord4j-core:635af28"
 
     // Logging
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'

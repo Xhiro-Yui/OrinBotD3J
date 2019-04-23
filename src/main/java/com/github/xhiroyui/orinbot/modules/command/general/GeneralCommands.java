@@ -1,10 +1,7 @@
 package com.github.xhiroyui.orinbot.modules.command.general;
 
 import com.github.xhiroyui.orinbot.modules.Command;
-import com.github.xhiroyui.orinbot.modules.CommandParameterCountException;
-import com.github.xhiroyui.orinbot.modules.CommandParameterValidationException;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.PermissionSet;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -14,7 +11,8 @@ public abstract class GeneralCommands extends Command {
         super(description, requiredParameters, parameterDescription, commandAlias);
     }
 
-    public Mono<Boolean> validatePermissions(Member author) {
+    @Override
+    protected Mono<Boolean> checkRequiredPermissions(PermissionSet permSet) {
         return Mono.just(true);
     }
 

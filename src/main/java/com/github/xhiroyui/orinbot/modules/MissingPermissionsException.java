@@ -8,6 +8,5 @@ public class MissingPermissionsException extends Exception {
 
     public MissingPermissionsException(Member author) {
         super("Missing permissions exception");
-
     }
 }

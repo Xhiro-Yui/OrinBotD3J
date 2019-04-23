@@ -10,7 +10,7 @@ public class OrinBot {
     private static final Logger logger = LoggerFactory.getLogger(OrinBot.class);
 
     public static void main(String[] args) {
-        final String TOKEN_VAJRA = "NDA1OTk5Mzg0NjY5NzE2NDgw.Dkqh9w.T17ocB5BoHYX3P4XIjAca7Fb13c";
+        final String TOKEN_VAJRA = "NDA1OTk5Mzg0NjY5NzE2NDgw.DwYwZg.1F93uTWRLQlWToQOVUaSkoJ9Xsc";
 
         DiscordClient client = new DiscordClientBuilder(TOKEN_VAJRA).build();
 
