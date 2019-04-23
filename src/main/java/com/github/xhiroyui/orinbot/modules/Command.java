@@ -6,7 +6,6 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
-import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
@@ -29,9 +28,12 @@ public abstract class Command {
         this.commandAlias = commandAlias;
     }
 
-    public Mono<Void> executeCommand(MessageCreateEvent event, String args) {
+    protected Mono<Void> executeCommand(MessageCreateEvent event, String args) {
+        return executeCommandInternals(event, args);
+    }
+
+    protected Mono<Void> executeCommandInternals(MessageCreateEvent event, String args) {
         return Mono.justOrEmpty(event)
-                .flatMap(mce -> mce.getMessage().getChannel().zipWith(event.getMessage().getAuthorAsMember()).flatMap(this::validatePermissions))
                 .flatMap(ignored -> processParameters(args))
                 .flatMap(processedArgs -> runCommand(event, processedArgs))
                 .onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
@@ -48,7 +50,9 @@ public abstract class Command {
                 .switchIfEmpty(Mono.error(new MissingPermissionsException(permCheck.getT2())));
     }
 
-    protected abstract Publisher<Boolean> checkRequiredPermissions(PermissionSet permissions);
+    protected Mono<Boolean> checkRequiredPermissions(PermissionSet permSet) {
+        return Mono.just(true);
+    }
 
     protected abstract Mono<Void> runCommand(MessageCreateEvent event, String[] args);
 
