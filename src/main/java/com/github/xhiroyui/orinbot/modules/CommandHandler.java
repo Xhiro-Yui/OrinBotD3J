@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
 import reactor.util.function.Tuples;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class CommandHandler {
@@ -17,13 +16,7 @@ public class CommandHandler {
 
     public CommandHandler(DiscordClient client) {
         this.client = client;
-        initializeGuildPrefixes();
-    }
-
-    private void initializeGuildPrefixes() {
-        // TODO Read data from somewhere to initialize, currently just creating dummy version
-        guildPrefixes = new HashMap<>();
-        guildPrefixes.put(1234567890L, "Dummy values");
+        CommandUtil.initializeGuildPrefixes();
     }
 
     public Flux<Void> handleMCEvent() {
@@ -39,8 +32,8 @@ public class CommandHandler {
 
     private Tuple3<Boolean, String, MessageCreateEvent> checkPrefixAndTrim(MessageCreateEvent mce) {
         return Tuples.of(
-                mce.getMessage().getContent().get().startsWith(getPrefix(mce.getGuildId().get().asLong())),
-                mce.getMessage().getContent().get().substring(getPrefix(mce.getGuildId().get().asLong()).length()),
+                mce.getMessage().getContent().get().startsWith(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong())),
+                mce.getMessage().getContent().get().substring(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong()).length()),
                 mce);
     }
 
@@ -51,12 +44,4 @@ public class CommandHandler {
                 .flatMap(command -> command.executeCommand(mce, splittedCommand.length == 1 ? "":splittedCommand[1])).then();
     }
 
-    private String getPrefix(long guildID) {
-        for (Map.Entry<Long, String> entry : guildPrefixes.entrySet()) {
-            if (entry.getKey() == guildID) {
-                return entry.getValue();
-            }
-        }
-        return "~";
-    }
 }
