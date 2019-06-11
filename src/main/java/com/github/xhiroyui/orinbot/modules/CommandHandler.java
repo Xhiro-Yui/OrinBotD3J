@@ -23,18 +23,18 @@ public class CommandHandler {
         return client.getEventDispatcher()
                 .on(MessageCreateEvent.class)
                 .filter(mce -> mce.getMessage().getContent().isPresent())
-                .filterWhen(mce -> mce.getMessage().getAuthor().map(author -> !author.isBot()))
-                .map(this::checkPrefixAndTrim)
-                .filter(Tuple3::getT1)
-                .flatMap(tup3 -> processCommand(tup3.getT2(), tup3.getT3()))
+                .filter(mce -> mce.getMessage().getAuthor().map(author -> !author.isBot()).orElse(false))
+                .filter(this::checkPrefix)
+                .flatMap(mce -> processCommand(trimCommand(mce), mce))
                 .share();
     }
 
-    private Tuple3<Boolean, String, MessageCreateEvent> checkPrefixAndTrim(MessageCreateEvent mce) {
-        return Tuples.of(
-                mce.getMessage().getContent().get().startsWith(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong())),
-                mce.getMessage().getContent().get().substring(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong()).length()),
-                mce);
+    private boolean checkPrefix(MessageCreateEvent mce) {
+        return mce.getMessage().getContent().get().startsWith(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong()));
+    }
+
+    private String trimCommand(MessageCreateEvent mce) {
+        return mce.getMessage().getContent().get().substring(CommandUtil.getGuildPrefix(mce.getGuildId().get().asLong()).length());
     }
 
     private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {
