@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 public abstract class AdministratorCommands extends Command{
-    public AdministratorCommands(String description, int requiredParameters, List<String> parameterDescription, List<String> commandAlias) {
+    AdministratorCommands(String description, int requiredParameters, List<String> parameterDescription, List<String> commandAlias) {
         super(description, requiredParameters, parameterDescription, commandAlias);
     }
 

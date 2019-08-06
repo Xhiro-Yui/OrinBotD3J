@@ -43,7 +43,7 @@ public abstract class Command {
                 .then();
     }
 
-    public Mono<PermissionSet> validatePermissions(Tuple2<MessageChannel, Member> permCheck) {
+    protected Mono<PermissionSet> validatePermissions(Tuple2<MessageChannel, Member> permCheck) {
         return Mono.just(permCheck.getT2())
                 .flatMap(Member::getBasePermissions)
                 .filterWhen(this::checkRequiredPermissions)
@@ -91,7 +91,7 @@ public abstract class Command {
         return sb.toString();
     }
 
-    protected Mono<String[]> processParameters(String arg) {
+    private Mono<String[]> processParameters(String arg) {
         return Mono.just(arg)
                 .map(args -> args.equalsIgnoreCase("") ? BotUtil.EMPTY_ARRAY : args.split(" ", requiredParameters + 1))
                 .filterWhen(args -> verifyParameterCount(args, requiredParameters))
@@ -101,13 +101,13 @@ public abstract class Command {
                 ;
     }
 
-    protected Mono<Boolean> verifyParameterCount(String[] args, int requiredParameters) {
+    private Mono<Boolean> verifyParameterCount(String[] args, int requiredParameters) {
         if (args.length >= requiredParameters)
             return Mono.just(true);
         return Mono.empty();
     }
 
-    protected Mono<Boolean> validateParameters(String[] args) {
+    private Mono<Boolean> validateParameters(String[] args) {
         return Mono.just(true);
     }
 
