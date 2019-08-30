@@ -14,6 +14,6 @@
 
     <logger name="reactor" level="ERROR" />
     <logger name="io.netty" level="ERROR" />
-    <!--<logger name="sx.blah.discord.Discord4J" level="DEBUG" />-->
+    <logger name="com.zaxxer" level="DEBUG" />
 
 </configuration>
