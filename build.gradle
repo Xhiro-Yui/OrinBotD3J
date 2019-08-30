@@ -15,12 +15,12 @@ repositories {
 
 dependencies {
     // Discord Library
-    implementation "com.discord4j.discord4j:discord4j-core:635af28"
+    implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: '635af28'
 
     // Logging
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile "ch.qos.logback:logback-classic:1.2.3"
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
 
     // Database connections
-    compile 'org.jdbi:jdbi3-core:3.4.0'
+    implementation group: 'org.jdbi', name: 'jdbi3-core', version: '3.4.0'
 }
