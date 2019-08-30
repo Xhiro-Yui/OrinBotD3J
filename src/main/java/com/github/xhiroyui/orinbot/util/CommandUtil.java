@@ -35,10 +35,8 @@ public class CommandUtil {
     private static Map<Long, String> guildPrefixes = new HashMap<>();
 
     public static String getGuildPrefix(long guildId) {
-        for (Map.Entry<Long, String> entry : guildPrefixes.entrySet()) {
-            if (entry.getKey() == guildId) {
-                return entry.getValue();
-            }
+        if (guildPrefixes.containsKey(guildId)) {
+            return guildPrefixes.get(guildId);
         }
         return "~";
     }
