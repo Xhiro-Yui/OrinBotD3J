@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+<!--    <persistence-unit name="com.github.xhiroyui.orinbot" transaction-type="RESOURCE_LOCAL">-->
+    <persistence-unit name="com.github.xhiroyui.orinbot">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.github.xhiroyui.orinbot.entity.GuildPrefix</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <!--SQL Stuff-->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+            <property name="hibernate.show_sql" value="false" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="validate" />
+
+            <!--Hikari CP Stuff-->
+            <property name="hibernate.connection.provider_class" value="org.hibernate.hikaricp.internal.HikariCPConnectionProvider" />
+<!--            <property name="hibernate.hikari.minimumIdle" value="1" />-->
+            <property name="hibernate.hikari.maximumPoolSize" value="2" />
+<!--            <property name="hibernate.hikari.idleTimeout" value="300" />-->
+            <property name="hibernate.hikari.dataSourceClassName" value="com.mysql.cj.jdbc.MysqlDataSource" />
+            <property name="hibernate.hikari.dataSource.url" value="jdbc:mysql://otmaa16c1i9nwrek.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/a08mb9fi8npzto7g" />
+            <property name="hibernate.hikari.dataSource.cachePrepStmts" value="true" />
+            <property name="hibernate.hikari.dataSource.prepStmtCacheSize" value="250" />
+            <property name="hibernate.hikari.dataSource.prepStmtCacheSqlLimit" value="2048" />
+            <property name="hibernate.hikari.dataSource.useServerPrepStmts" value="true" />
+
+            <!-- Disable the second-level cache  -->
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+
+            <!-- Default is false for backwards compatibility.  Should be used on all new projects -->
+<!--            <property name="hibernate.id.new_generator_mappings" value="true"/>-->
+
+        </properties>
+    </persistence-unit>
+</persistence>

@@ -1,16 +1,23 @@
 package com.github.xhiroyui.orinbot.util;
 
+import com.github.xhiroyui.orinbot.entity.GuildPrefix;
 import com.github.xhiroyui.orinbot.modules.Command;
+import com.github.xhiroyui.orinbot.util.dao.DatabaseUtil;
+import discord4j.core.DiscordClient;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
+import javax.persistence.EntityManager;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CommandUtil {
-    private static final Logger logger = LoggerFactory.getLogger(CommandUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandUtil.class);
 
     // Command Callers
     private static Map<String, Command> commandCallers = new HashMap<>();
@@ -42,12 +49,23 @@ public class CommandUtil {
     }
 
     public static void initializeGuildPrefixes() {
-        //TODO change to grab from DB
-        guildPrefixes = new HashMap<>();
-        guildPrefixes.put(1234567890L, "Dummy values until DB is set up");
+        EntityManager em = DatabaseUtil.getEntityManager();
+        try {
+            List<GuildPrefix> listGp = em.createQuery("select a from "+GuildPrefix.class.getSimpleName()+" a", GuildPrefix.class).getResultList();
+            for (GuildPrefix gp : listGp) {
+                guildPrefixes.put(gp.getGuildId(), gp.getPrefix());
+            }
+        } catch (Exception e){
+            log.warn("Failed to initialize guild prefixes. All guilds will be using the default prefix [~].");
+        } finally {
+            em.close();
+        }
     }
 
-    public static void updateGuildPrefixes() {
+    public static void updateGuildPrefixes(DiscordClient client) {
         //TODO change to update from DB
+        client.getChannelById(Snowflake.of(BotConstant.LOG_CHANNEL_ID))
+                .cast(TextChannel.class)
+                .flatMap(chn -> chn.createMessage(spec -> spec.setContent("Unable to initialize guild prefix due to an SQL Exception.")));
     }
 }

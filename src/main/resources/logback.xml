@@ -4,7 +4,7 @@
         <encoder>
             <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>
             <!--Swap between the below and above pattern to see the full logger name-->
-            <!--<pattern>%-75logger - %msg%n</pattern>-->
+<!--            <pattern>%-75logger - %msg%n</pattern>-->
         </encoder>
     </appender>
 
@@ -12,8 +12,9 @@
         <appender-ref ref="STDOUT" />
     </root>
 
-    <logger name="reactor" level="ERROR" />
-    <logger name="io.netty" level="ERROR" />
-    <logger name="com.zaxxer" level="DEBUG" />
+    <logger name="reactor" level="WARN" />
+    <logger name="io.netty" level="WARN" />
+    <logger name="com.zaxxer" level="WARN" />
+    <logger name="org.hibernate" level="WARN" />
 
 </configuration>

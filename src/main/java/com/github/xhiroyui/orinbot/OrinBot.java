@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class OrinBot {
 
-    private static final Logger logger = LoggerFactory.getLogger(OrinBot.class);
+    private static final Logger log = LoggerFactory.getLogger(OrinBot.class);
 
     public static void main(String[] args) {
         final String TOKEN_VAJRA = System.getenv("OrinBotD3J_token");

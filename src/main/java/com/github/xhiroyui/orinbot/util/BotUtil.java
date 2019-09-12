@@ -13,27 +13,25 @@ import reactor.core.publisher.Mono;
 
 public class BotUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(BotUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(BotUtil.class);
 
-    private static final long logChannelID = 534642277394677770L;
-
-    public static final ErrorHandler COMMAND_ERROR_HANDLER = (object, error, event) -> {
+    public static final ErrorHandler COMMAND_ERROR_HANDLER = (command, error, event) -> {
         if (error instanceof CommandParameterValidationException) {
-            return Mono.just("Incorrect parameters in **" + object.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required command parameters.");
+            return Mono.just("Incorrect parameters in **" + command.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required command parameters.");
         }
         if (error instanceof CommandParameterCountException) {
-            return Mono.just("Insufficient parameters in **" + object.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required amount of command parameters.");
+            return Mono.just("Insufficient parameters in **" + command.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required amount of command parameters.");
         }
         if (error instanceof MissingPermissionsException) {
             return Mono.just("Insufficient permissions");
         }
 
-        logger.warn("Command " + object.getClass().getSimpleName() + " faced an unhandled error : " + error.getClass().getSimpleName());
+        log.warn("Command " + command.getClass().getSimpleName() + " faced an unhandled error : " + error.getClass().getSimpleName());
 
         return event.getClient()
-                .getChannelById(Snowflake.of(logChannelID))
+                .getChannelById(Snowflake.of(BotConstant.LOG_CHANNEL_ID))
                 .cast(TextChannel.class)
-                .flatMap(chn -> chn.createMessage(spec -> spec.setContent(String.format("Command %s hit an unhandled error with the input : `%s`.", object.getClass().getSimpleName(), event.getMessage().getContent().get()))))
+                .flatMap(chn -> chn.createMessage(spec -> spec.setContent(String.format("Command %s hit an unhandled error with the input : `%s`.", command.getClass().getSimpleName(), event.getMessage().getContent().orElse(null)))))
                 .map(disposed -> "Unhandled error. Bot author has been notified and will fix this soonᵀᴹ");
     };
 
