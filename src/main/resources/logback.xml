@@ -2,9 +2,9 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>
+<!--            <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>-->
             <!--Swap between the below and above pattern to see the full logger name-->
-<!--            <pattern>%-75logger - %msg%n</pattern>-->
+            <pattern>%-75logger - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -14,7 +14,8 @@
 
     <logger name="reactor" level="WARN" />
     <logger name="io.netty" level="WARN" />
-    <logger name="com.zaxxer" level="WARN" />
-    <logger name="org.hibernate" level="WARN" />
+<!--    <logger name="com.zaxxer" level="WARN" />-->
+<!--    <logger name="org.hibernate" level="WARN" />-->
+    <logger name="org.springframework" level="DEBUG" />
 
 </configuration>

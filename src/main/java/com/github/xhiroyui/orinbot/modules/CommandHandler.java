@@ -5,8 +5,6 @@ import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple3;
-import reactor.util.function.Tuples;
 
 import java.util.Map;
 
@@ -41,7 +39,8 @@ public class CommandHandler {
         final String[] splittedCommand = trimmedCommand.split(" ", 2);
         return Flux.just(splittedCommand[0])
                 .flatMap(CommandUtil::commandLookup)
-                .flatMap(command -> command.executeCommand(mce, splittedCommand.length == 1 ? "":splittedCommand[1])).then();
+                .flatMap(command -> command.executeCommand(mce, splittedCommand.length == 1 ? "":splittedCommand[1]))
+                .then();
     }
 
 }

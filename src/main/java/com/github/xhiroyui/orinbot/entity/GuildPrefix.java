@@ -1,34 +1,14 @@
 package com.github.xhiroyui.orinbot.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
-@Table(name = "GUILD_PREFIX")
+@Data
+@AllArgsConstructor
+@Table("GUILD_PREFIX")
 public class GuildPrefix {
-	@Id
-	@Column(name = "guild_id")
-	private Long guildId;
-
-	@Column(name = "prefix")
+	private @Id Long guildId;
 	private String prefix;
-
-
-	public Long getGuildId() {
-		return guildId;
-	}
-
-	public void setGuildId(Long guildId) {
-		this.guildId = guildId;
-	}
-
-	public String getPrefix() {
-		return prefix;
-	}
-
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
 }
