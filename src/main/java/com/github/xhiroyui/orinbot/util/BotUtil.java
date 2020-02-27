@@ -3,13 +3,13 @@ package com.github.xhiroyui.orinbot.util;
 import com.github.xhiroyui.orinbot.modules.CommandParameterCountException;
 import com.github.xhiroyui.orinbot.modules.CommandParameterValidationException;
 import com.github.xhiroyui.orinbot.modules.MissingPermissionsException;
-import discord4j.core.DiscordClient;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.util.Snowflake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+
+//import discord4j.core.object.entity.TextChannel;
 
 public class BotUtil {
 
