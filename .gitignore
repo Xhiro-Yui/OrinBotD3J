@@ -23,10 +23,15 @@ gen/
 .gradletasknamecache
 .gradle/
 build/
-bin/
 /.settings/
 !gradle-wrapper.jar
+gradlew
+gradlew.bat
+gradle/wrapper
 
 # Program files
 src/main/resources/logback-test.xml
 whitelist.json
+
+# Others
+out/*
