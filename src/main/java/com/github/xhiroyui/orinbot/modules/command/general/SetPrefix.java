@@ -1,6 +1,6 @@
 package com.github.xhiroyui.orinbot.modules.command.general;
 
-import com.github.xhiroyui.orinbot.datastore.dao.GuildPrefixDAO;
+import com.github.xhiroyui.orinbot.datastore.dao.GuildPrefixRepository;
 import com.github.xhiroyui.orinbot.datastore.entity.GuildPrefix;
 import com.github.xhiroyui.orinbot.modules.Command;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -16,7 +16,7 @@ import java.util.List;
 public class SetPrefix extends Command {
 
 	@Autowired
-	GuildPrefixDAO dao;
+	GuildPrefixRepository dao;
 
 	@Autowired
 	DatabaseClient db;

@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.2.4.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id "io.freefair.lombok" version "5.0.0-rc4"
 }
 
 group 'com.github.xhiroyui.orinbot'
@@ -27,6 +28,6 @@ dependencies {
     implementation group: 'org.springframework.data', name: 'spring-data-r2dbc', version:'1.0.0.RELEASE'
     implementation 'io.r2dbc:r2dbc-pool:0.8.0.RELEASE'
 
-    // Spring shit
+    // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter'
 }

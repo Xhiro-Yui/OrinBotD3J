@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 
 @Repository
-public interface GuildPrefixDAO extends ReactiveCrudRepository<GuildPrefix, Long> {
+public interface GuildPrefixRepository extends ReactiveCrudRepository<GuildPrefix, Long> {
 
 	@Query("select * from guild_prefix where prefix = :givenPrefix")
 	Flux<GuildPrefix> findAllByGivenPrefix(String givenPrefix);
