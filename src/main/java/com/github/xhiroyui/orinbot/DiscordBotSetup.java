@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 class DiscordBotSetup {
 
+    @Autowired CommandUtil commandUtil;
+    @Autowired CommandHandler commandHandler;
+
     @Autowired Ping ping;
     @Autowired Pong pong;
     @Autowired Help help;
@@ -23,12 +26,17 @@ class DiscordBotSetup {
     }
 
     private void setupCommands(GatewayDiscordClient gateway) {
-        CommandUtil.addCommand(ping);
-        CommandUtil.addCommand(pong);
-        CommandUtil.addCommand(help);
-        CommandUtil.addCommand(setPrefix);
+        commandUtil.addCommand(ping);
+        commandUtil.addCommand(pong);
+        commandUtil.addCommand(help);
+        commandUtil.addCommand(setPrefix);
 
-        CommandHandler commandHandler = new CommandHandler(gateway);
+        try {
+            commandUtil.initializeGuildPrefixes();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         commandHandler.handleMCEvent().subscribe();
     }
 }

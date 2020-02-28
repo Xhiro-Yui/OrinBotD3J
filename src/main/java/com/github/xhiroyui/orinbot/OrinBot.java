@@ -1,6 +1,5 @@
 package com.github.xhiroyui.orinbot;
 
-import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.slf4j.Logger;
@@ -21,16 +20,15 @@ public class OrinBot implements ApplicationRunner {
 	@Autowired
 	DiscordBotSetup setup;
 
+	@Autowired
+	GatewayDiscordClient gateway;
+
 	public static void main(String[] args) {
 		SpringApplication.run(OrinBot.class, args);
 	}
 
 	@Override
 	public void run(ApplicationArguments args) {
-		final String DEV_TOKEN = System.getenv("TOKEN_ORINBOT_DEV");
-
-		GatewayDiscordClient gateway = DiscordClient.create(DEV_TOKEN).login().block();
-
 		// For advanced use when Sharding is necessary
 //        GatewayDiscordClient gateway = DiscordClient.create(DEV_TOKEN).gateway()
 //                .setInitialPresence(shard -> Presence.online())
@@ -41,8 +39,6 @@ public class OrinBot implements ApplicationRunner {
 //                .setEventDispatcher(EventDispatcher.buffering())
 //                .connect()
 //                .block();
-
-		assert gateway != null;
 
 		gateway.on(ReadyEvent.class)
 				.subscribe(ready -> System.out.println("Logged in as " + ready.getSelf().getUsername()));

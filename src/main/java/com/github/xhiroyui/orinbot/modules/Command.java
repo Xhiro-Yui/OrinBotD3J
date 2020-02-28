@@ -2,6 +2,7 @@ package com.github.xhiroyui.orinbot.modules;
 
 import com.github.xhiroyui.orinbot.modules.command.RequiredPermissions;
 import com.github.xhiroyui.orinbot.util.BotUtil;
+import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
@@ -9,6 +10,7 @@ import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
@@ -21,6 +23,9 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 @RequiredPermissions
 public abstract class Command {
+
+	@Autowired public CommandUtil commandUtil;
+
 	final private String commandName = getClass().getSimpleName();
 	final private String commandDescription;
 	final private int requiredParameters;

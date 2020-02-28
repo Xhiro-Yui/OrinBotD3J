@@ -1,7 +1,6 @@
 package com.github.xhiroyui.orinbot.modules.command.general;
 
 import com.github.xhiroyui.orinbot.modules.Command;
-import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ public class Help extends Command {
 		return Mono.just(event)
 				.map(MessageCreateEvent::getMessage)
 				.flatMap(Message::getChannel)
-				.zipWith(CommandUtil.commandLookup(args[0]))
+				.zipWith(commandUtil.commandLookup(args[0]))
 				.flatMap(tuple -> tuple.getT1().createMessage(spec -> spec.setEmbed(embedSpec -> tuple.getT2().getCommandInfo(embedSpec))))
 				.then();
 	}
