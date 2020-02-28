@@ -2,9 +2,9 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-<!--            <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>-->
+            <pattern>%d{ISO8601, Asia/Singapore} | %5level | %-30logger{20} - %msg%n</pattern>
             <!--Swap between the below and above pattern to see the full logger name-->
-            <pattern>%5level | %-75logger - %msg%n</pattern>
+<!--            <pattern>%5level | %-75logger - %msg%n</pattern>-->
         </encoder>
     </appender>
 
@@ -14,9 +14,9 @@
 
     <logger name="reactor" level="INFO" />
     <logger name="io.netty" level="INFO" />
-    <logger name="org.springframework" level="INFO" />
-    <logger name="org.springframework.data.r2dbc" level="DEBUG" />
-    <logger name="dev.miku.r2dbc.mysql" level="DEBUG" />
-    <logger name="io.r2dbc.pool" level="DEBUG" />
+    <logger name="org.springframework" level="WARN" />
+    <logger name="org.springframework.data.r2dbc" level="INFO" />
+    <logger name="dev.miku.r2dbc.mysql" level="INFO" />
+    <logger name="io.r2dbc.pool" level="WARN" />
 
 </configuration>
