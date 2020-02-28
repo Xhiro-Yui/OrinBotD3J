@@ -17,6 +17,6 @@ public class DatabaseConfig implements OrinBotConfig {
 	@NonNull private String username;
 	@NonNull private String password;
 	@NonNull private String database;
-	@NonNull private int initialSize;
-	@NonNull private int maxSize;
+	private int initialSize;
+	private int maxSize;
 }

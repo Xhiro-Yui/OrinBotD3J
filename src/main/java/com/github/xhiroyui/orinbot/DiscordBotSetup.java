@@ -1,5 +1,6 @@
 package com.github.xhiroyui.orinbot;
 
+import com.github.xhiroyui.orinbot.modules.Command;
 import com.github.xhiroyui.orinbot.modules.CommandHandler;
 import com.github.xhiroyui.orinbot.modules.command.administrator.Pong;
 import com.github.xhiroyui.orinbot.modules.command.general.Help;
@@ -10,26 +11,23 @@ import discord4j.core.GatewayDiscordClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+
 @Component
 class DiscordBotSetup {
 
     @Autowired CommandUtil commandUtil;
     @Autowired CommandHandler commandHandler;
-
-    @Autowired Ping ping;
-    @Autowired Pong pong;
-    @Autowired Help help;
-    @Autowired SetPrefix setPrefix;
+    @Autowired Collection<Command> commandList;
 
     void setupBot(GatewayDiscordClient gateway) {
         setupCommands(gateway);
     }
 
     private void setupCommands(GatewayDiscordClient gateway) {
-        commandUtil.addCommand(ping);
-        commandUtil.addCommand(pong);
-        commandUtil.addCommand(help);
-        commandUtil.addCommand(setPrefix);
+        for (Command command : commandList) {
+            commandUtil.addCommand(command);
+        }
 
         try {
             commandUtil.initializeGuildPrefixes();
