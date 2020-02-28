@@ -5,8 +5,10 @@ import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
@@ -15,22 +17,30 @@ import java.time.Duration;
 
 @Configuration
 @EnableR2dbcRepositories
-public class DatabaseConfig extends AbstractR2dbcConfiguration {
+@Profile("production")
+public class DatabaseConfigProduction extends AbstractR2dbcConfiguration {
+
+	@Value("${ORINBOT_DB_HOST}")
+	private String host;
+
+	@Value("${ORINBOT_DB_USERNAME}")
+	private String username;
+
+	@Value("${ORINBOT_DB_PASSWORD}")
+	private String password;
+
+	@Value("${ORINBOT_DB_DATABASE}")
+	private String database;
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
 		return new ConnectionPool(ConnectionPoolConfiguration.builder(MySqlConnectionFactory
 				.from(MySqlConnectionConfiguration
 						.builder()
-//						.host("127.0.0.1")
-//						.username("root")
-//						.password("abc123")
-//						.database("orinbot")
-						.host("otmaa16c1i9nwrek.cbetxkdyhwsb.us-east-1.rds.amazonaws.com")
-						.username("vte8fokn6dm12nyh")
-						.password("ia0oj06877jgmmj6")
-						.database("a08mb9fi8npzto7g")
-						.port(3306)
+						.host(host)
+						.username(username)
+						.password(password)
+						.database(database)
 						.build()
 				))
 				.maxIdleTime(Duration.ofSeconds(600)) // 10 minutes

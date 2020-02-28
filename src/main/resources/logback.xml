@@ -18,5 +18,6 @@
     <logger name="org.springframework.data.r2dbc" level="INFO" />
     <logger name="dev.miku.r2dbc.mysql" level="INFO" />
     <logger name="io.r2dbc.pool" level="WARN" />
+    <logger name="gateway.session" level="WARN" />
 
 </configuration>
