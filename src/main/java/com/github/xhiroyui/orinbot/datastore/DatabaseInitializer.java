@@ -5,6 +5,7 @@ import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.ConnectionPoolConfiguration;
 import io.r2dbc.spi.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 
 import java.time.Duration;
 
+@Slf4j
 @Configuration
 @EnableR2dbcRepositories
 public class DatabaseInitializer extends AbstractR2dbcConfiguration {
@@ -23,6 +25,7 @@ public class DatabaseInitializer extends AbstractR2dbcConfiguration {
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
+		log.info("Creating a connection factory.");
 		return new ConnectionPool(ConnectionPoolConfiguration.builder(MySqlConnectionFactory
 				.from(MySqlConnectionConfiguration
 						.builder()

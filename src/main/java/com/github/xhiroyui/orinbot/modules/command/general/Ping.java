@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public class Ping extends Command {
-
 	public Ping() {
 		super("Pongs you.",
 				0,

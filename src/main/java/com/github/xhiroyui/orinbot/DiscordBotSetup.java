@@ -8,9 +8,9 @@ import com.github.xhiroyui.orinbot.modules.command.general.SetPrefix;
 import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.GatewayDiscordClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
-@Controller
+@Component
 class DiscordBotSetup {
 
     @Autowired Ping ping;

@@ -7,30 +7,28 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
+@RequiredArgsConstructor
 @RequiredPermissions
 public abstract class Command {
-	private String commandName;
-	private String commandDescription;
-	private int requiredParameters;
-	private List<String> parameterDescription;
-	private List<String> commandAlias;
-
-	public Command(String description, int requiredParameters, List<String> parameterDescription, List<String> commandAlias) {
-		this.commandName = getClass().getSimpleName();
-		this.commandDescription = description;
-		this.requiredParameters = requiredParameters;
-		this.parameterDescription = parameterDescription;
-		this.commandAlias = commandAlias;
-	}
+	final private String commandName = getClass().getSimpleName();
+	final private String commandDescription;
+	final private int requiredParameters;
+	final private List<String> parameterDescription;
+	final private List<String> commandAlias;
 
 	protected Mono<Void> executeCommand(MessageCreateEvent event, String args) {
+		log.debug("Executing command [" + this.commandName + "] with the following arguments : " + args);
 		return Mono.justOrEmpty(this.getClass().getAnnotation(RequiredPermissions.class).value())
 				.zipWith(event.getMessage().getAuthorAsMember()
 						.flatMap(Member::getBasePermissions))
@@ -45,6 +43,9 @@ public abstract class Command {
 	}
 
 	protected Mono<Boolean> validatePermissions(Tuple2<Permission[], PermissionSet> permCheck) {
+		log.debug("Validating permissions for command [" + this.commandName + "].");
+		log.debug("Required permissions are " + Arrays.toString(permCheck.getT1()) + ".");
+		log.debug("Given permissions are " + permCheck.getT2().toString());
 		for (Permission p : permCheck.getT1())
 			if (!permCheck.getT2().contains(p))
 				return Mono.error(new MissingPermissionsException());
@@ -102,6 +103,7 @@ public abstract class Command {
 	}
 
 	private Mono<Boolean> validateParameters(String[] args) {
+		// TODO actually validate the parameters to the required using regex/something suitable
 		return Mono.just(true);
 	}
 
