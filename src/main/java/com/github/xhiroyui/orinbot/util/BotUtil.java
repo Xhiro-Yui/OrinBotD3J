@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
-//import discord4j.core.object.entity.TextChannel;
-
 public class BotUtil {
 
     private static final Logger log = LoggerFactory.getLogger(BotUtil.class);
