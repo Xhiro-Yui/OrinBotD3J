@@ -44,7 +44,7 @@ public class OrinBot implements ApplicationRunner {
 				.subscribe(ready -> System.out.println("Logged in as " + ready.getSelf().getUsername()));
 
 		setup.setupBot(gateway);
-		System.out.println("Bla");
+
 		gateway.onDisconnect().block();
 	}
 }
