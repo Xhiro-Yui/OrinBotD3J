@@ -15,49 +15,48 @@ import java.util.Map;
 @Component
 public class CommandUtil {
 
-    @Autowired
-    GuildPrefixRepository guildPrefixRepository;
+	// Command Callers
+	private static Map<String, Command> commandCallers = new HashMap<>();
 
-    // Command Callers
-    private static Map<String, Command> commandCallers = new HashMap<>();
+	public void addCommand(Command command) {
+		for (String caller : command.getAlias()) {
+			commandCallers.put(caller, command);
+		}
+	}
 
-    public void addCommand(Command command) {
-        for (String caller : command.getAlias()) {
-            commandCallers.put(caller, command);
-        }
-    }
+	public Mono<? extends Command> commandLookup(String commandCaller) {
+		return Mono.justOrEmpty(commandCaller)
+				.flatMap(commandsName -> Mono.justOrEmpty(commandCallers.get(commandCaller)));
+	}
 
-    public Mono<? extends Command> commandLookup(String commandCaller) {
-        return Mono.justOrEmpty(commandCaller)
-                .flatMap(commandsName -> Mono.justOrEmpty(commandCallers.get(commandCaller)));
-    }
+	public EmbedCreateSpec generateCommandHelp(EmbedCreateSpec embedSpec, String commandName, String description) {
+		return embedSpec.setTitle(commandName)
+				.setDescription(description);
+	}
 
-    public EmbedCreateSpec generateCommandHelp(EmbedCreateSpec embedSpec, String commandName, String description) {
-        return embedSpec.setTitle(commandName)
-                .setDescription(description);
-    }
+	// Guild Prefixes
+	@Autowired
+	GuildPrefixRepository guildPrefixRepository;
+	private static Map<Long, String> guildPrefixMap = new HashMap<>();
 
-    // Guild Prefixes
-    private static Map<Long, String> guildPrefixMap = new HashMap<>();
+	public String getGuildPrefix(long guildId) {
+		if (guildPrefixMap.containsKey(guildId)) {
+			return guildPrefixMap.get(guildId);
+		}
+		return "~";
+	}
 
-    public String getGuildPrefix(long guildId) {
-        System.out.println(guildPrefixMap);
-        System.out.println(guildId);
-        if (guildPrefixMap.containsKey(guildId)) {
-            System.out.println(guildPrefixMap.get(guildId));
-            return guildPrefixMap.get(guildId);
-        }
-        return "~";
-    }
-
-    public void initializeGuildPrefixes() throws InterruptedException {
-        System.out.println("Initializing Guild Prefixes");
-        guildPrefixRepository.findAll().subscribe(guildPrefix -> {
-            guildPrefixMap.put(guildPrefix.getGuildId(), guildPrefix.getPrefix());
-            System.out.println(guildPrefixMap);
-        });
-//        log.warn("Failed to initialize guild prefixes. All guilds will be using the default prefix [~].");
-    }
+	public void initializeGuildPrefixes() {
+		guildPrefixRepository.findAll()
+				.doOnNext(guildPrefix -> guildPrefixMap.put(guildPrefix.getGuildId(), guildPrefix.getPrefix()))
+				.doFinally(signalType -> {
+					if (guildPrefixMap.isEmpty())
+						log.warn("Failed to initialize guild prefixes. All guilds will be using the default prefix [~].");
+					else
+						log.info("Guild prefix map initialization success");
+				})
+				.subscribe();
+	}
 
 //    public static void updateGuildPrefixes(DiscordClient client) {
 //        TODO change to update from DB

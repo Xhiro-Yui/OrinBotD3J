@@ -12,12 +12,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.SignalType;
 import reactor.util.function.Tuple2;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public abstract class Command {
 	}
 
 	protected Mono<Boolean> validatePermissions(Tuple2<Permission[], PermissionSet> permCheck) {
-		log.debug("Validating permissions for command [" + this.commandName + "].");
+		log.debug(" == Permission Checking for Command [" + this.commandName + "]. == ");
 		log.debug("Required permissions are " + Arrays.toString(permCheck.getT1()) + ".");
 		log.debug("Given permissions are " + permCheck.getT2().toString());
 		for (Permission p : permCheck.getT1())
