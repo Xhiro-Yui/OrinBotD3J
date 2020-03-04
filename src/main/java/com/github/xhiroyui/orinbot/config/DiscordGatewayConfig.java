@@ -1,5 +1,6 @@
-package com.github.xhiroyui.orinbot;
+package com.github.xhiroyui.orinbot.config;
 
+import com.github.xhiroyui.orinbot.OrinBotConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;

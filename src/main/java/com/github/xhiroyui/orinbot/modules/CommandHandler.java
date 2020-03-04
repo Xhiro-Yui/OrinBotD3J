@@ -10,14 +10,10 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class CommandHandler {
+
 	@Autowired CommandUtil commandUtil;
-	private final GatewayDiscordClient gateway;
 
-	public CommandHandler(GatewayDiscordClient gateway) {
-		this.gateway = gateway;
-	}
-
-	public Flux<Void> handleMCEvent() {
+	public Flux<Void> handleMCEvent(GatewayDiscordClient gateway) {
 		return gateway.on(MessageCreateEvent.class)
 				.filter(mce -> mce.getMessage().getAuthor().map(author -> !author.isBot()).orElse(false))
 				.filter(mce -> mce.getMessage().getContent().isPresent())
@@ -36,10 +32,10 @@ public class CommandHandler {
 	}
 
 	private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {
-		final String[] splittedCommand = trimmedCommand.split(" ", 2);
-		return Flux.just(splittedCommand[0])
+		final String[] splitCommand = trimmedCommand.split(" ", 2);
+		return Flux.just(splitCommand[0])
 				.flatMap(commandUtil::commandLookup)
-				.flatMap(command -> command.executeCommand(mce, splittedCommand.length == 1 ? "" : splittedCommand[1])).then();
+				.flatMap(command -> command.executeCommand(mce, splitCommand.length == 1 ? "" : splitCommand[1])).then();
 	}
 
 }

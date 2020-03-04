@@ -1,5 +1,6 @@
 package com.github.xhiroyui.orinbot.datastore;
 
+import com.github.xhiroyui.orinbot.config.DatabaseConfig;
 import dev.miku.r2dbc.mysql.MySqlConnectionConfiguration;
 import dev.miku.r2dbc.mysql.MySqlConnectionFactory;
 import io.r2dbc.pool.ConnectionPool;
@@ -18,14 +19,14 @@ import java.time.Duration;
 @Slf4j
 @Configuration
 @EnableR2dbcRepositories
-public class DatabaseInitializer extends AbstractR2dbcConfiguration {
+public class DatabaseBean extends AbstractR2dbcConfiguration {
 
 	@Autowired
 	DatabaseConfig config;
 
 	@Bean
 	public ConnectionFactory connectionFactory() {
-		log.info("Creating a connection factory.");
+		log.debug("Creating a connection factory.");
 		return new ConnectionPool(ConnectionPoolConfiguration.builder(MySqlConnectionFactory
 				.from(MySqlConnectionConfiguration
 						.builder()

@@ -1,4 +1,4 @@
-package com.github.xhiroyui.orinbot.datastore;
+package com.github.xhiroyui.orinbot.config;
 
 import com.github.xhiroyui.orinbot.OrinBotConfig;
 import lombok.AllArgsConstructor;
@@ -19,4 +19,5 @@ public class DatabaseConfig implements OrinBotConfig {
 	@NonNull private String database;
 	private int initialSize;
 	private int maxSize;
+
 }

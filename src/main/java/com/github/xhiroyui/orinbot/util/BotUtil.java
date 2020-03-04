@@ -5,13 +5,17 @@ import com.github.xhiroyui.orinbot.modules.CommandParameterValidationException;
 import com.github.xhiroyui.orinbot.modules.MissingPermissionsException;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.util.Snowflake;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 public class BotUtil {
 
-    private static final Logger log = LoggerFactory.getLogger(BotUtil.class);
+    public static final Long LOG_CHANNEL_ID = 534642277394677770L;
+    public static final String[] EMPTY_ARRAY = new String[0];
 
     public static final ErrorHandler COMMAND_ERROR_HANDLER = (command, error, event) -> {
         if (error instanceof CommandParameterValidationException) {
@@ -27,12 +31,11 @@ public class BotUtil {
         log.warn("Command " + command.getClass().getSimpleName() + " faced an unhandled error : " + error.getClass().getSimpleName());
 
         return event.getClient()
-                .getChannelById(Snowflake.of(BotConstant.LOG_CHANNEL_ID))
+                .getChannelById(Snowflake.of(LOG_CHANNEL_ID))
                 .cast(TextChannel.class)
                 .flatMap(chn -> chn.createMessage(spec -> spec.setContent(String.format("Command %s hit an unhandled error with the input : `%s`.", command.getClass().getSimpleName(), event.getMessage().getContent().orElse(null)))))
                 .map(disposed -> "Unhandled error. Bot author has been notified and will fix this soonᵀᴹ");
     };
 
-    public static final String[] EMPTY_ARRAY = new String[0];
 
 }

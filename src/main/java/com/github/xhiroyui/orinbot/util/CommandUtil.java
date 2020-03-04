@@ -1,11 +1,13 @@
 package com.github.xhiroyui.orinbot.util;
 
 import com.github.xhiroyui.orinbot.datastore.dao.GuildPrefixRepository;
+import com.github.xhiroyui.orinbot.datastore.entity.GuildPrefix;
 import com.github.xhiroyui.orinbot.modules.Command;
 import discord4j.core.spec.EmbedCreateSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -46,16 +48,16 @@ public class CommandUtil {
 		return "~";
 	}
 
-	public void initializeGuildPrefixes() {
-		guildPrefixRepository.findAll()
+	public Flux<GuildPrefix> initializeGuildPrefixes() {
+		log.info("[PreLoginSetup] - Initializing guild prefixes");
+		return guildPrefixRepository.findAll()
 				.doOnNext(guildPrefix -> guildPrefixMap.put(guildPrefix.getGuildId(), guildPrefix.getPrefix()))
 				.doFinally(signalType -> {
 					if (guildPrefixMap.isEmpty())
-						log.warn("Failed to initialize guild prefixes. All guilds will be using the default prefix [~].");
+						log.warn("Failed to load guild prefixes. All guilds will be using the default prefix [~].");
 					else
-						log.info("Guild prefix map initialization success");
-				})
-				.subscribe();
+						log.info("[PreLoginSetup] - Guild prefix map loaded.");
+				});
 	}
 
 //    public static void updateGuildPrefixes(DiscordClient client) {
