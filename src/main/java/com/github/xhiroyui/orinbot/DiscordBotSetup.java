@@ -22,21 +22,11 @@ class DiscordBotSetup {
     @Autowired CommandHandler commandHandler;
     @Autowired Collection<Command> commandList;
 
-    Flux<Integer> aFlux = Flux.just(10, 20, 30, 40, 50);
-    Flux<Integer> bFlux = Flux.just(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-    Flux<Integer> cFlux = Flux.just(100, 200, 300);
-
     public Flux<GuildPrefix> initializeGuildPrefixes() {
         return commandUtil.initializeGuildPrefixes();
     }
 
-    public Mono<GatewayDiscordClient> postLoginSetup(GatewayDiscordClient gateway) {
-        log.info("Starting postLogin Setup.");
-        setupCommands(gateway);
-        return Mono.just(gateway);
-    }
-
-    private Mono<GatewayDiscordClient> setupCommands(GatewayDiscordClient gateway) {
+    public Mono<GatewayDiscordClient> setupCommands(GatewayDiscordClient gateway) {
         for (Command command : commandList) {
             commandUtil.addCommand(command);
         }

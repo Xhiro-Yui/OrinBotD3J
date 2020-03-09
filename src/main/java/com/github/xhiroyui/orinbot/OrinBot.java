@@ -46,7 +46,7 @@ public class OrinBot implements ApplicationRunner {
 				setup.initializeGuildPrefixes()
 		) // Add more preLoginSetup to this list of Mono.when()
 				.then(DiscordClient.create(config.getToken()).login())
-				.flatMap(gatewayClient -> setup.postLoginSetup(gatewayClient)).block();
+				.flatMap(gatewayClient -> setup.setupCommands(gatewayClient)).block();
 
 		Objects.requireNonNull(gateway).onDisconnect().block();
 	}
