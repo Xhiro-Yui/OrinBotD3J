@@ -23,8 +23,15 @@ public class Help extends Command {
 		return Mono.just(event)
 				.map(MessageCreateEvent::getMessage)
 				.flatMap(Message::getChannel)
-				.zipWith(commandUtil.commandLookup(args[0]))
-				.flatMap(tuple -> tuple.getT1().createMessage(spec -> spec.setEmbed(embedSpec -> tuple.getT2().getCommandInfo(embedSpec))))
+				.flatMap(messageChannel ->
+						commandUtil.commandLookup(args[0]).flatMap(command ->
+								messageChannel.createMessage(messageCreateSpec ->
+										messageCreateSpec.setEmbed(command::getCommandInfo)
+								)
+						)
+				)
+//				.zipWith(commandUtil.commandLookup(args[0]))
+//				.flatMap(tuple -> tuple.getT1().createMessage(spec -> spec.setEmbed(embedSpec -> tuple.getT2().getCommandInfo(embedSpec))))
 				.then();
 	}
 }
