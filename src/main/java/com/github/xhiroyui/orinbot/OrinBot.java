@@ -3,11 +3,9 @@ package com.github.xhiroyui.orinbot;
 import com.github.xhiroyui.orinbot.config.DiscordGatewayConfig;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
@@ -18,7 +16,7 @@ import java.util.Objects;
 @Slf4j
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackageClasses = OrinBotConfig.class)
-public class OrinBot implements ApplicationRunner {
+public class OrinBot implements CommandLineRunner {
 
 	@Autowired
 	DiscordBotSetup setup;
@@ -31,7 +29,7 @@ public class OrinBot implements ApplicationRunner {
 	}
 
 	@Override
-	public void run(ApplicationArguments args) {
+	public void run(String... args) {
 		// For advanced use when Sharding is necessary
 //        GatewayDiscordClient gateway = DiscordClient.create(DEV_TOKEN).gateway()
 //                .setInitialPresence(shard -> Presence.online())
@@ -43,7 +41,8 @@ public class OrinBot implements ApplicationRunner {
 //                .connect()
 //                .block();
 		GatewayDiscordClient gateway = Mono.when(
-				setup.initializeGuildPrefixes()
+				setup.initializeGuildPrefixes(),
+				setup.initializeWhitelist()
 		) // Add more preLoginSetup to this list of Mono.when()
 				.then(DiscordClient.create(config.getToken()).login())
 				.flatMap(gatewayClient -> setup.setupCommands(gatewayClient)).block();

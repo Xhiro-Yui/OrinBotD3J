@@ -5,6 +5,7 @@ import com.github.xhiroyui.orinbot.util.BotUtil;
 import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
@@ -12,21 +13,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.SignalType;
-import reactor.util.function.Tuple2;
 
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 @Slf4j
 @RequiredArgsConstructor
 @RequiredPermissions
 public abstract class Command {
 
-	@Autowired public CommandUtil commandUtil;
+	@Autowired
+	public CommandUtil commandUtil;
 
 	final private String commandName = getClass().getSimpleName();
 	final private String commandDescription;
@@ -37,9 +36,15 @@ public abstract class Command {
 	protected Mono<Void> executeCommand(MessageCreateEvent event, String args) {
 		log.debug("Executing command [" + this.commandName + "] with the following arguments : " + args);
 		return Mono.justOrEmpty(this.getClass().getAnnotation(RequiredPermissions.class).value())
-				.zipWith(event.getMessage().getAuthorAsMember()
-						.flatMap(Member::getBasePermissions))
-				.flatMap(this::validatePermissions)
+				.flatMap(requiredPermissions -> event.getMessage()
+						.getAuthorAsMember()
+						.flatMap(Member::getBasePermissions)
+						.flatMap(permissionSet ->
+								validatePermissions(requiredPermissions, permissionSet, event.getMessage()
+										.getAuthor()
+										.orElseThrow()
+								)
+						))
 				.flatMap(ignored -> processParameters(args))
 				.flatMap(processedArgs -> runCommand(event, processedArgs))
 				.onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
@@ -49,13 +54,20 @@ public abstract class Command {
 				.then();
 	}
 
-	protected Mono<Boolean> validatePermissions(Tuple2<Permission[], PermissionSet> permCheck) {
-		log.debug(" == Permission Checking for Command [" + this.commandName + "]. == ");
-		log.debug("Required permissions are " + Arrays.toString(permCheck.getT1()) + ".");
-		log.debug("Given permissions are " + permCheck.getT2().toString());
-		for (Permission p : permCheck.getT1())
-			if (!permCheck.getT2().contains(p))
-				return Mono.error(new MissingPermissionsException());
+	protected Mono<Boolean> validatePermissions(Permission[] requiredPermissions, PermissionSet userPermissions, User user) {
+		log.debug(" == Permission Checking for Command [{}]. == ", this.commandName);
+		log.debug("Checking user against whitelist : " + commandUtil.ownerBypassCheck(user.getId()));
+		if (commandUtil.ownerBypassCheck(user.getId())) {
+			log.debug("User whitelisted. Bypassing permission requirements for command [{}]", this.commandName);
+			return Mono.just(true);
+		}
+		log.debug("User is not whitelisted. Checking permissions of user.");
+		log.debug("Required permissions are " + Arrays.toString(requiredPermissions) + ".");
+		log.debug("Given permissions are " + userPermissions.toString());
+
+		for (Permission p : requiredPermissions)
+			if (!userPermissions.contains(p))
+				return Mono.error(new MissingPermissionsException(user, p, this.commandName));
 		return Mono.just(true);
 	}
 

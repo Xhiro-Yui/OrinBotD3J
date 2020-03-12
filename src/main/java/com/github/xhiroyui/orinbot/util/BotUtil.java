@@ -6,9 +6,6 @@ import com.github.xhiroyui.orinbot.modules.MissingPermissionsException;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.util.Snowflake;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -25,7 +22,7 @@ public class BotUtil {
             return Mono.just("Insufficient parameters in **" + command.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required amount of command parameters.");
         }
         if (error instanceof MissingPermissionsException) {
-            return Mono.just("Insufficient permissions");
+            return Mono.just(error.getMessage());
         }
 
         log.warn("Command " + command.getClass().getSimpleName() + " faced an unhandled error : " + error.getClass().getSimpleName());

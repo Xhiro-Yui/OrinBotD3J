@@ -3,11 +3,13 @@ package com.github.xhiroyui.orinbot.modules;
 import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
 public class CommandHandler {
 
@@ -24,6 +26,8 @@ public class CommandHandler {
 	}
 
 	private boolean checkPrefix(MessageCreateEvent mce) {
+		log.debug("== Checking guild prefix in guild ID [{}] ==", mce.getGuildId().orElseThrow().asLong());
+		log.debug("Guild prefix stored in memory is {}", commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow().asLong()));
 		return mce.getMessage().getContent().orElseThrow().startsWith(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow().asLong()));
 	}
 
