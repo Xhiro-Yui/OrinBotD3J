@@ -22,7 +22,7 @@ public class CommandUtil {
 	@Autowired GuildPrefixRepository guildPrefixRepository;
 
 	private static Map<String, Command> commandCallers = new HashMap<>();
-	private static Map<Long, String> guildPrefixMap = new HashMap<>();
+	private static Map<Snowflake, String> guildPrefixMap = new HashMap<>();
 	private static List<Snowflake> whitelistedUserList = new ArrayList<>();
 
 	@PostConstruct
@@ -36,7 +36,7 @@ public class CommandUtil {
 		return guildPrefixRepository.findAll()
 				.doOnNext(guildPrefix -> {
 					log.debug("[-- Guild Prefixes --] Adding guild prefix of {} with prefix of {} into map.", guildPrefix.getGuildId(), guildPrefix.getPrefix());
-					guildPrefixMap.put(guildPrefix.getGuildId(), guildPrefix.getPrefix());
+					guildPrefixMap.put(Snowflake.of(guildPrefix.getGuildId()), guildPrefix.getPrefix());
 				})
 				.doFinally(signalType -> {
 					if (guildPrefixMap.isEmpty())
@@ -82,7 +82,7 @@ public class CommandUtil {
 				.setDescription(description);
 	}
 
-	public String getGuildPrefix(long guildId) {
+	public String getGuildPrefix(Snowflake guildId) {
 		if (guildPrefixMap.containsKey(guildId)) {
 			return guildPrefixMap.get(guildId);
 		}
