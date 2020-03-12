@@ -15,13 +15,9 @@ public class BotUtil {
     public static final String[] EMPTY_ARRAY = new String[0];
 
     public static final ErrorHandler COMMAND_ERROR_HANDLER = (command, error, event) -> {
-        if (error instanceof CommandParameterValidationException) {
-            return Mono.just("Incorrect parameters in **" + command.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required command parameters.");
-        }
-        if (error instanceof CommandParameterCountException) {
-            return Mono.just("Insufficient parameters in **" + command.getClass().getSimpleName() + "** command. Use `help` command for more info regarding the required amount of command parameters.");
-        }
-        if (error instanceof MissingPermissionsException) {
+        if (error instanceof CommandParameterValidationException
+                || error instanceof CommandParameterCountException
+                || error instanceof MissingPermissionsException ) {
             return Mono.just(error.getMessage());
         }
 

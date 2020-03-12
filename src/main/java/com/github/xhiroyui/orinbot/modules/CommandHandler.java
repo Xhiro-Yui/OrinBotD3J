@@ -27,12 +27,12 @@ public class CommandHandler {
 
 	private boolean checkPrefix(MessageCreateEvent mce) {
 		log.debug("== Checking guild prefix in guild ID [{}] ==", mce.getGuildId().orElseThrow().asLong());
-		log.debug("Guild prefix stored in memory is {}", commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow().asLong()));
-		return mce.getMessage().getContent().orElseThrow().startsWith(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow().asLong()));
+		log.debug("Guild prefix stored in memory is {}", commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()));
+		return mce.getMessage().getContent().orElseThrow().startsWith(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()));
 	}
 
 	private String trimCommand(MessageCreateEvent mce) {
-		return mce.getMessage().getContent().orElseThrow().substring(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow().asLong()).length());
+		return mce.getMessage().getContent().orElseThrow().substring(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()).length());
 	}
 
 	private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {

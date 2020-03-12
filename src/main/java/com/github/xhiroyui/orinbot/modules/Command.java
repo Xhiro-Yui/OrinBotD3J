@@ -39,14 +39,18 @@ public abstract class Command {
 				.flatMap(requiredPermissions -> event.getMessage()
 						.getAuthorAsMember()
 						.flatMap(Member::getBasePermissions)
-						.flatMap(permissionSet ->
+						.filterWhen(permissionSet ->
 								validatePermissions(requiredPermissions, permissionSet, event.getMessage()
 										.getAuthor()
 										.orElseThrow()
 								)
 						))
-				.flatMap(ignored -> processParameters(args))
-				.flatMap(processedArgs -> runCommand(event, processedArgs))
+				.flatMap(ignored -> Mono.just(args.equalsIgnoreCase("") ?
+						BotUtil.EMPTY_ARRAY :
+						args.split(" ", requiredParameters + 1)))
+				.filterWhen(commandArgs -> verifyParameterCount(event, commandArgs, this.requiredParameters))
+				.filterWhen(this::validateParameters)
+				.flatMap(commandArgs -> runCommand(event, commandArgs))
 				.onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
 						.flatMap(errorMessage -> event.getMessage().getChannel()
 								.flatMap(channel -> channel.createMessage(spec -> spec.setContent(errorMessage))))
@@ -67,7 +71,28 @@ public abstract class Command {
 
 		for (Permission p : requiredPermissions)
 			if (!userPermissions.contains(p))
-				return Mono.error(new MissingPermissionsException(user, p, this.commandName));
+				return Mono.error(new MissingPermissionsException(
+						user,
+						p,
+						this.commandName)
+				);
+		return Mono.just(true);
+	}
+
+	private Mono<Boolean> verifyParameterCount(MessageCreateEvent mce, String[] args, int requiredParameters) {
+		if (args.length >= requiredParameters)
+			return Mono.just(true);
+		return Mono.error(new CommandParameterCountException(
+				commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()),
+				requiredParameters,
+				this.commandName)
+		);
+	}
+
+	private Mono<Boolean> validateParameters(String[] args) {
+		// TODO actually validate the parameters to the required using regex/something suitable
+		if (false) //itll never happen
+			return Mono.error(new CommandParameterValidationException(this.commandName));
 		return Mono.just(true);
 	}
 
@@ -103,27 +128,6 @@ public abstract class Command {
 			sb.append(each);
 		}
 		return sb.toString();
-	}
-
-	private Mono<String[]> processParameters(String arg) { // Potentially bad code as pointed out by alphahelix
-		return Mono.just(arg)
-				.map(args -> args.equalsIgnoreCase("") ? BotUtil.EMPTY_ARRAY : args.split(" ", requiredParameters + 1))
-				.filterWhen(args -> verifyParameterCount(args, requiredParameters))
-				.switchIfEmpty(Mono.error(new CommandParameterCountException()))
-				.filterWhen(this::validateParameters)
-				.switchIfEmpty(Mono.error(new CommandParameterValidationException()))
-				;
-	}
-
-	private Mono<Boolean> verifyParameterCount(String[] args, int requiredParameters) {
-		if (args.length >= requiredParameters)
-			return Mono.just(true);
-		return Mono.empty();
-	}
-
-	private Mono<Boolean> validateParameters(String[] args) {
-		// TODO actually validate the parameters to the required using regex/something suitable
-		return Mono.just(true);
 	}
 
 	public List<String> getAlias() {
