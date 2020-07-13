@@ -1,6 +1,6 @@
 package com.github.xhiroyui.orinbot.modules.command;
 
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Permission;
 
 import java.lang.annotation.*;
 

@@ -18,7 +18,7 @@ public class CommandHandler {
 	public Flux<Void> handleMCEvent(GatewayDiscordClient gateway) {
 		return gateway.on(MessageCreateEvent.class)
 				.filter(mce -> mce.getMessage().getAuthor().map(author -> !author.isBot()).orElse(false))
-				.filter(mce -> mce.getMessage().getContent().isPresent())
+//				.filter(mce -> mce.getMessage().getContent().isPresent())
 				.filter(mce -> mce.getGuildId().isPresent())
 				.filter(this::checkPrefix)
 				.flatMap(mce -> processCommand(trimCommand(mce), mce))
@@ -28,11 +28,11 @@ public class CommandHandler {
 	private boolean checkPrefix(MessageCreateEvent mce) {
 		log.debug("== Checking guild prefix in guild ID [{}] ==", mce.getGuildId().orElseThrow().asLong());
 		log.debug("Guild prefix stored in memory is {}", commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()));
-		return mce.getMessage().getContent().orElseThrow().startsWith(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()));
+		return mce.getMessage().getContent().startsWith(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()));
 	}
 
 	private String trimCommand(MessageCreateEvent mce) {
-		return mce.getMessage().getContent().orElseThrow().substring(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()).length());
+		return mce.getMessage().getContent().substring(commandUtil.getGuildPrefix(mce.getGuildId().orElseThrow()).length());
 	}
 
 	private Mono<Void> processCommand(String trimmedCommand, MessageCreateEvent mce) {

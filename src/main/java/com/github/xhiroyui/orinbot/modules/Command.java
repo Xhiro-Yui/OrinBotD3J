@@ -6,16 +6,17 @@ import com.github.xhiroyui.orinbot.util.CommandUtil;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
-import discord4j.core.object.util.PermissionSet;
 import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.rest.util.Color;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
-import java.awt.*;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -25,12 +26,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class Command {
 
 	@Autowired
-	public CommandUtil commandUtil;
+	protected CommandUtil commandUtil;
 
 	final private String commandName = getClass().getSimpleName();
 	final private String commandDescription;
 	final private int requiredParameters;
-	final private List<String> parameterDescription;
+	final private LinkedHashMap<String, String> parameterDescription;
 	final private List<String> commandAlias;
 
 	protected Mono<Void> executeCommand(MessageCreateEvent event, String args) {
@@ -49,7 +50,7 @@ public abstract class Command {
 						BotUtil.EMPTY_ARRAY :
 						args.split(" ", requiredParameters + 1)))
 				.filterWhen(commandArgs -> verifyParameterCount(event, commandArgs, this.requiredParameters))
-				.filterWhen(this::validateParameters)
+				.filterWhen(commandArgs -> validateParameters(event, commandArgs))
 				.flatMap(commandArgs -> runCommand(event, commandArgs))
 				.onErrorResume(error -> BotUtil.COMMAND_ERROR_HANDLER.handle(this, error, event)
 						.flatMap(errorMessage -> event.getMessage().getChannel()
@@ -89,10 +90,12 @@ public abstract class Command {
 		);
 	}
 
-	private Mono<Boolean> validateParameters(String[] args) {
-		// TODO actually validate the parameters to the required using regex/something suitable
-		if (false) //itll never happen
-			return Mono.error(new CommandParameterValidationException(this.commandName));
+	/**
+	 * Each {@link Command} that has arguments should override this method individually to validate the required parameters
+	 * @param args Given arguments in the command
+	 * @return Always true unless {@link Override} is implemented in {@link Command}
+	 */
+	protected Mono<Boolean> validateParameters(MessageCreateEvent mce, String[] args) {
 		return Mono.just(true);
 	}
 
@@ -101,7 +104,8 @@ public abstract class Command {
 				.setDescription(this.commandDescription)
 				.addField("Required Parameters", formatParameterDescription(), true)
 				.addField("Alias", formatCommandAlias(), true)
-				.setColor(new Color(ThreadLocalRandom.current().nextInt(0, 255 + 1),
+				.setColor(Color.of(
+						ThreadLocalRandom.current().nextInt(0, 255 + 1),
 						ThreadLocalRandom.current().nextInt(0, 255 + 1),
 						ThreadLocalRandom.current().nextInt(0, 255 + 1)))
 				.setFooter("Nya :3c - OrinBot", null)
@@ -114,7 +118,7 @@ public abstract class Command {
 			sb.append("None");
 		else
 			for (int i = 0; i < parameterDescription.size(); i++) {
-				sb.append(i + 1).append(" : ").append(parameterDescription.get(i));
+				sb.append(i + 1).append(" : ").append(parameterDescription.get(i)); // TODO issue here change to reading from map
 			}
 
 		return sb.toString();
@@ -132,6 +136,10 @@ public abstract class Command {
 
 	public List<String> getAlias() {
 		return this.commandAlias;
+	}
+
+	public int getRequiredParameters() {
+		return this.requiredParameters;
 	}
 
 	protected abstract Mono<Void> runCommand(MessageCreateEvent event, String[] args);

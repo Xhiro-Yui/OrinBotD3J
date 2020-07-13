@@ -3,7 +3,7 @@ package com.github.xhiroyui.orinbot.util;
 import com.github.xhiroyui.orinbot.datastore.dao.GuildPrefixRepository;
 import com.github.xhiroyui.orinbot.datastore.entity.GuildPrefix;
 import com.github.xhiroyui.orinbot.modules.Command;
-import discord4j.core.object.util.Snowflake;
+import discord4j.common.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,11 +66,6 @@ public class CommandUtil {
 	public Boolean ownerBypassCheck(Snowflake user) {
 		return whitelistedUserList.contains(user);
 	}
-
-//	public Boolean ownerBypassCheck(Member user) {
-//		return whitelistedUserList.contains(user.getId());
-//	}
-
 
 	public Mono<? extends Command> commandLookup(String commandCaller) {
 		return Mono.justOrEmpty(commandCaller)

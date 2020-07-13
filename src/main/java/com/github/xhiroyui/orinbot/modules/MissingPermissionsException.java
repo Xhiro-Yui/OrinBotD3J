@@ -1,7 +1,7 @@
 package com.github.xhiroyui.orinbot.modules;
 
 import discord4j.core.object.entity.User;
-import discord4j.core.object.util.Permission;
+import discord4j.rest.util.Permission;
 
 public class MissingPermissionsException extends Exception {
 
